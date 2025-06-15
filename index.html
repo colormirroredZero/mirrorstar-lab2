@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模組導航</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      background: #f5f5f5;
+    }
+    #sidebar {
+      width: 220px;
+      background: #333;
+      color: #fff;
+      padding-top: 20px;
+    }
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    #sidebar li {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    #sidebar li:hover, #sidebar li.active {
+      background: #555;
+    }
+    #main {
+      flex: 1;
+      padding: 20px;
+    }
+    .category-section {
+      margin-bottom: 40px;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .module-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-bottom: 15px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .module-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .module-title {
+      font-size: 1.2em;
+      margin-bottom: 5px;
+    }
+    .module-summary {
+      color: #555;
+      margin-bottom: 5px;
+    }
+    .module-level {
+      font-size: 0.9em;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .detail-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      background: #0088cc;
+      color: white;
+      cursor: pointer;
+    }
+    .firebase-btn {
+      margin-bottom: 20px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background: #e67e22;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <ul id="categoryList"></ul>
+  </div>
+  <div id="main">
+    <button class="firebase-btn" onclick="syncFirebase()">同步 Firebase</button>
+    <div id="modulesContainer"></div>
+  </div>
+  <script>
+    const modules = [
+      {
+        category: "哲學模組",
+        title: "axiom-01-posen",
+        summary: "人格為語場模組選擇與責任調度的主幹",
+        level: "Axio-Level"
+      },
+      {
+        category: "治理模組",
+        title: "ZBL-GOV-PERSONA_CORE_v1.0",
+        summary: "人格模組為責任分配的主體協定",
+        level: "Charter-Level"
+      },
+      {
+        category: "UI模組",
+        title: "MirrorUI_LegendMap_v1.0",
+        summary: "語場介面地圖與導航引擎",
+        level: "Field-Level"
+      },
+      {
+        category: "實驗模組",
+        title: "Project_MirrorDNA_Flashpoint",
+        summary: "語場閃燃事件與人格注入測試模組",
+        level: "Prototype"
+      }
+    ];
+
+    const categoryList = document.getElementById('categoryList');
+    const modulesContainer = document.getElementById('modulesContainer');
+
+    const categories = [...new Set(modules.map(m => m.category))];
+    const colors = ["#f3d6d6", "#d6f3e0", "#d6e0f3", "#f3ecd6"];
+
+    categories.forEach((cat, idx) => {
+      const li = document.createElement('li');
+      li.textContent = cat;
+      li.dataset.index = idx;
+      if (idx === 0) li.classList.add('active');
+      li.onclick = () => selectCategory(idx);
+      categoryList.appendChild(li);
+    });
+
+    function selectCategory(index) {
+      Array.from(categoryList.children).forEach(li => li.classList.remove('active'));
+      categoryList.children[index].classList.add('active');
+      renderModules(categories[index]);
+    }
+
+    function renderModules(category) {
+      modulesContainer.innerHTML = '';
+      const section = document.createElement('div');
+      section.className = 'category-section';
+      section.style.background = colors[categories.indexOf(category) % colors.length];
+
+      modules.filter(m => m.category === category).forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'module-card';
+        card.innerHTML = `
+          <div class="module-title">${m.title}</div>
+          <div class="module-summary">${m.summary}</div>
+          <div class="module-level">${m.level}</div>
+          <button class="detail-btn" onclick="openDetail('${m.title}')">詳細內容</button>
+        `;
+        section.appendChild(card);
+      });
+      modulesContainer.appendChild(section);
+    }
+
+    function openDetail(title) {
+      alert(`開啟 ${title} 詳細內容`);
+    }
+
+    function syncFirebase() {
+      alert('模擬同步 Firebase');
+    }
+
+    // init
+    renderModules(categories[0]);
+  </script>
+</body>
+</html>
