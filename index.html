@@ -103,10 +103,26 @@
       appId: "1:446562930012:web:4d252516399346dafc4599"
     };
     firebase.initializeApp(firebaseConfig);
+    function openDetail(title) {
+  const db = firebase.database();
+  const defRef = firebase.database().ref(`MirrorPhilosophy/${title}/definition`);
+
+  defRef.once('value').then((snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      alert(`【${title}】\n\n標題：${data.title}\n作者：${data.author}\n主張：${data.core_claim}\n引用語：${data.quote}`);
+    } else {
+      alert('找不到此模組的定義資料。');
+    }
+  }).catch((error) => {
+    console.error(error);
+    alert('讀取失敗，請檢查 Firebase 路徑是否正確。');
+  });
+}
     const db = firebase.database();    
     const modules = [
       {
-        category: "哲學模組",
+        category: "MirrorPhilosophy",
         title: "axiom-01-posen",
         summary: "人格為語場模組選擇與責任調度的主幹",
         level: "Axio-Level"
@@ -177,6 +193,9 @@
       defRef.once('value').then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
+          let pretty = '';
+          for (let key in data) {
+        pretty += `${key}：${data[key]}\n`;          
           showModal(title, data);
         } else {
           showModal(title, '找不到定義資料');
