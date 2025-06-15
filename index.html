@@ -81,6 +81,8 @@
       cursor: pointer;
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>  
 </head>
 <body>
   <div id="sidebar">
@@ -91,6 +93,17 @@
     <div id="modulesContainer"></div>
   </div>
   <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAd2_SMiAPPnHSwDj3UvJb3kQ037VtOwRk",
+      authDomain: "mirrorstar-zbl.firebaseapp.com",
+      databaseURL: "https://mirrorstar-zbl-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mirrorstar-zbl",
+      storageBucket: "mirrorstar-zbl.firebasestorage.app",
+      messagingSenderId: "446562930012",
+      appId: "1:446562930012:web:4d252516399346dafc4599"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();    
     const modules = [
       {
         category: "哲學模組",
@@ -160,7 +173,15 @@
     }
 
     function openDetail(title) {
-      alert(`開啟 ${title} 詳細內容`);
+    const defRef = db.ref(`MirrorPhilosophy/${title}/definition`);
+      defRef.once('value').then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          showModal(title, data);
+        } else {
+          showModal(title, '找不到定義資料');
+        }
+      });  
     }
 
     function syncFirebase() {
@@ -168,7 +189,20 @@
     }
 
     // init
-    renderModules(categories[0]);
+  renderModules(categories[0]);
+  </script>
+  <div id="modal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%); background:white; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.2); z-index:1000;">
+    <h3 id="modalTitle"></h3>
+    <p id="modalContent"></p>
+    <button onclick="document.getElementById('modal').style.display='none'">關閉</button>
+  </div>
+
+  <script>
+  function showModal(title, content) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalContent').textContent = content;
+    document.getElementById('modal').style.display = 'block';
+  }
   </script>
 </body>
 </html>
